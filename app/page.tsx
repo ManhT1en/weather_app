@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Navbar from '@/components/Navbar';
 import SearchBar from '@/components/SearchBar';
 import WeatherCard from '@/components/WeatherCard';
 import ForecastCard from '@/components/ForecastCard';
@@ -69,13 +70,55 @@ export default function Home() {
     }
   };
 
+  // Dynamic gradient based on weather condition
+  const getWeatherGradient = () => {
+    if (!weather) return 'from-blue-400 via-purple-400 to-pink-400';
+
+    const condition = weather.weather[0].main.toLowerCase();
+    const hour = new Date().getHours();
+    const isNight = hour < 6 || hour > 20;
+
+    if (isNight) {
+      return 'from-indigo-900 via-purple-900 to-pink-900';
+    }
+
+    switch (condition) {
+      case 'clear':
+        return 'from-sky-400 via-blue-400 to-cyan-400';
+      case 'clouds':
+        return 'from-slate-400 via-gray-400 to-zinc-400';
+      case 'rain':
+      case 'drizzle':
+        return 'from-slate-600 via-blue-600 to-indigo-600';
+      case 'thunderstorm':
+        return 'from-gray-700 via-slate-700 to-zinc-700';
+      case 'snow':
+        return 'from-blue-200 via-cyan-200 to-slate-300';
+      case 'mist':
+      case 'fog':
+        return 'from-gray-400 via-slate-400 to-zinc-400';
+      default:
+        return 'from-blue-400 via-purple-400 to-pink-400';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 py-12 px-4">
-      <div className="container mx-auto">
+    <div className={`min-h-screen bg-gradient-to-br ${getWeatherGradient()} py-12 px-4 relative overflow-hidden transition-all duration-1000`}>
+      {/* Animated mesh gradient overlay */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Navbar */}
+      <Navbar />
+
+      <div className="container mx-auto relative z-10 pt-20">
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">Weather Application</h1>
-          <p className="text-xl text-blue-100">
-            Get real-time weather updates and forecasts
+          <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">Weather</h1>
+          <p className="text-xl md:text-2xl text-white/90 font-light">
+            Real-time updates and forecasts
           </p>
         </header>
 
@@ -83,13 +126,13 @@ export default function Home() {
 
         {loading && (
           <div className="text-center text-white text-xl">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
-            <p className="mt-4">Loading weather data...</p>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-white/30 border-t-white"></div>
+            <p className="mt-4 font-medium">Loading weather data...</p>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg max-w-2xl mx-auto">
+          <div className="backdrop-blur-xl bg-red-500/20 border border-red-300/50 text-white px-6 py-4 rounded-2xl max-w-2xl mx-auto shadow-lg">
             {error}
           </div>
         )}
@@ -99,14 +142,14 @@ export default function Home() {
         {forecast && !loading && <ForecastCard forecast={forecast} />}
 
         {!weather && !loading && !error && (
-          <div className="text-center text-white text-xl">
+          <div className="text-center text-white text-xl backdrop-blur-md bg-white/10 p-8 rounded-2xl max-w-2xl mx-auto border border-white/20">
             Search for a city to see the weather
           </div>
         )}
       </div>
 
-      <footer className="text-center mt-16 text-white">
-        <p className="text-sm">
+      <footer className="text-center mt-16 text-white/80 relative z-10">
+        <p className="text-sm font-medium">
           Weather data provided by OpenWeatherMap
         </p>
         <p className="text-xs mt-2">

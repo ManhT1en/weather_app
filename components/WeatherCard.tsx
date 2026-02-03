@@ -10,67 +10,71 @@ interface WeatherCardProps {
 
 export default function WeatherCard({ weather }: WeatherCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl mx-auto">
-      <div className="text-center mb-6">
-        <h2 className="text-4xl font-bold text-gray-800">
+    <div className="backdrop-blur-2xl bg-white/10 rounded-3xl shadow-2xl p-8 md:p-10 max-w-3xl mx-auto border border-white/20 hover:bg-white/15 transition-all duration-300">
+      <div className="text-center mb-8">
+        <h2 className="text-5xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">
           {weather.name}, {weather.sys.country}
         </h2>
-        <p className="text-gray-600 mt-2 capitalize text-xl">
+        <p className="text-white/80 mt-3 capitalize text-xl md:text-2xl font-light">
           {weather.weather[0].description}
         </p>
       </div>
 
-      <div className="flex justify-center items-center mb-6">
-        <Image
-          src={getWeatherIcon(weather.weather[0].icon)}
-          alt={weather.weather[0].description}
-          width={120}
-          height={120}
-        />
-        <div className="text-6xl font-bold text-gray-800">
-          {Math.round(weather.main.temp)}°C
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
+        <div className="relative">
+          <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl"></div>
+          <Image
+            src={getWeatherIcon(weather.weather[0].icon)}
+            alt={weather.weather[0].description}
+            width={160}
+            height={160}
+            className="relative z-10 drop-shadow-2xl"
+          />
+        </div>
+        <div className="text-8xl md:text-9xl font-bold text-white drop-shadow-2xl">
+          {Math.round(weather.main.temp)}°
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-sm">Feels Like</p>
-          <p className="text-2xl font-semibold text-gray-800">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">
+        <div className="backdrop-blur-xl bg-white/10 p-5 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+          <p className="text-white/70 text-sm font-medium mb-1">Feels Like</p>
+          <p className="text-3xl font-bold text-white">
             {Math.round(weather.main.feels_like)}°C
           </p>
         </div>
 
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-sm">Humidity</p>
-          <p className="text-2xl font-semibold text-gray-800">
+        <div className="backdrop-blur-xl bg-white/10 p-5 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+          <p className="text-white/70 text-sm font-medium mb-1">Humidity</p>
+          <p className="text-3xl font-bold text-white">
             {weather.main.humidity}%
           </p>
         </div>
 
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-sm">Wind Speed</p>
-          <p className="text-2xl font-semibold text-gray-800">
+        <div className="backdrop-blur-xl bg-white/10 p-5 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+          <p className="text-white/70 text-sm font-medium mb-1">Wind Speed</p>
+          <p className="text-3xl font-bold text-white">
             {weather.wind.speed} m/s
           </p>
         </div>
 
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-sm">Wind Direction</p>
-          <p className="text-2xl font-semibold text-gray-800">
+        <div className="backdrop-blur-xl bg-white/10 p-5 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+          <p className="text-white/70 text-sm font-medium mb-1">Wind Direction</p>
+          <p className="text-3xl font-bold text-white">
             {getWindDirection(weather.wind.deg)}
           </p>
         </div>
 
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-sm">Pressure</p>
-          <p className="text-2xl font-semibold text-gray-800">
+        <div className="backdrop-blur-xl bg-white/10 p-5 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+          <p className="text-white/70 text-sm font-medium mb-1">Pressure</p>
+          <p className="text-3xl font-bold text-white">
             {weather.main.pressure} hPa
           </p>
         </div>
 
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-sm">Cloudiness</p>
-          <p className="text-2xl font-semibold text-gray-800">
+        <div className="backdrop-blur-xl bg-white/10 p-5 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-200">
+          <p className="text-white/70 text-sm font-medium mb-1">Cloudiness</p>
+          <p className="text-3xl font-bold text-white">
             {weather.clouds.all}%
           </p>
         </div>
