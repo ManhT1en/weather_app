@@ -3,6 +3,7 @@
 import { ForecastData } from '@/types/weather';
 import { getWeatherIcon, formatDate, formatTime } from '@/lib/utils';
 import Image from 'next/image';
+import { useApp } from '@/contexts/AppContext';
 
 interface ForecastCardProps {
   forecast: ForecastData;
@@ -10,10 +11,11 @@ interface ForecastCardProps {
 
 export default function ForecastCard({ forecast }: ForecastCardProps) {
   const dailyForecasts = forecast.list.filter((item, index) => index % 8 === 0).slice(0, 5);
+  const { t } = useApp();
 
   return (
     <div className="backdrop-blur-2xl bg-white/10 rounded-3xl shadow-2xl p-8 md:p-10 max-w-7xl mx-auto mt-8 border border-white/20">
-      <h3 className="text-4xl font-bold text-white mb-8 drop-shadow-lg">5-Day Forecast</h3>
+      <h3 className="text-4xl font-bold text-white mb-8 drop-shadow-lg">{t('forecast5Day')}</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
         {dailyForecasts.map((item) => (
@@ -64,7 +66,7 @@ export default function ForecastCard({ forecast }: ForecastCardProps) {
       </div>
 
       <div className="mt-10">
-        <h4 className="text-2xl font-bold text-white mb-6 drop-shadow-lg">Hourly Forecast (Next 24 Hours)</h4>
+        <h4 className="text-2xl font-bold text-white mb-6 drop-shadow-lg">{t('forecastHourly')}</h4>
         <div className="overflow-x-auto custom-scrollbar">
           <div className="flex gap-4 pb-4">
             {forecast.list.slice(0, 8).map((item) => (

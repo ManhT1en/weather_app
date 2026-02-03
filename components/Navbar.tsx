@@ -1,19 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useApp } from '@/contexts/AppContext';
 
 export default function Navbar() {
-  const [isDark, setIsDark] = useState(false);
-  const [language, setLanguage] = useState('EN');
-
-  const toggleDarkMode = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(language === 'EN' ? 'VI' : 'EN');
-  };
+  const { isDark, toggleDarkMode, language, toggleLanguage, t } = useApp();
 
   return (
     <nav className="fixed top-4 left-4 right-4 z-50">
@@ -83,7 +73,7 @@ export default function Navbar() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <span className="hidden md:inline">Profile</span>
+                <span className="hidden md:inline">{t('profile')}</span>
               </button>
             </div>
           </div>

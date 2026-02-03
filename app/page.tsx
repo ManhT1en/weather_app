@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar';
 import SearchBar from '@/components/SearchBar';
 import WeatherCard from '@/components/WeatherCard';
 import ForecastCard from '@/components/ForecastCard';
+import SearchHistory from '@/components/SearchHistory';
+import FavoritesList from '@/components/FavoritesList';
 import { WeatherData, ForecastData } from '@/types/weather';
 import {
   getCurrentWeather,
@@ -12,12 +14,15 @@ import {
   getCurrentWeatherByCoords,
   getForecastByCoords,
 } from '@/lib/weatherApi';
+import { useApp } from '@/contexts/AppContext';
 
 export default function Home() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [favoritesRefresh, setFavoritesRefresh] = useState(0);
+  const { t } = useApp();
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -70,18 +75,38 @@ export default function Home() {
     }
   };
 
-  // Dynamic gradient based on weather condition
+  // Dynamic gradient based on PRIORITY: Night > Heat > Cold > Weather Condition
   const getWeatherGradient = () => {
     if (!weather) return 'from-blue-400 via-purple-400 to-pink-400';
 
+    const temp = weather.main.temp;
+    const currentTime = weather.dt; // Unix timestamp
+    const sunrise = weather.sys.sunrise;
+    const sunset = weather.sys.sunset;
     const condition = weather.weather[0].main.toLowerCase();
-    const hour = new Date().getHours();
-    const isNight = hour < 6 || hour > 20;
+
+    // PRIORITY 1: Night Time Check (Highest Priority)
+    // If current time is before sunrise OR after sunset = NIGHT
+    const isNight = currentTime < sunrise || currentTime > sunset;
 
     if (isNight) {
-      return 'from-indigo-900 via-purple-900 to-pink-900';
+      // Deep Purple/Indigo/Black gradient for night
+      return 'from-indigo-950 via-purple-950 to-slate-950';
     }
 
+    // PRIORITY 2: Daytime - Heat Check (>30°C)
+    if (temp > 30) {
+      // Warm Orange/Red/Yellow gradient for intense heat
+      return 'from-orange-500 via-red-500 to-yellow-500';
+    }
+
+    // PRIORITY 3: Daytime - Cold Check (<10°C)
+    if (temp < 10) {
+      // Icy White/Pale Blue gradient for cold/winter
+      return 'from-slate-200 via-blue-200 to-cyan-200';
+    }
+
+    // PRIORITY 4: Daytime - Weather Condition (Fallback for moderate temp 10-30°C)
     switch (condition) {
       case 'clear':
         return 'from-sky-400 via-blue-400 to-cyan-400';
@@ -116,18 +141,21 @@ export default function Home() {
 
       <div className="container mx-auto relative z-10 pt-20">
         <header className="text-center mb-12">
-          <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">Weather</h1>
+          <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">{t('title')}</h1>
           <p className="text-xl md:text-2xl text-white/90 font-light">
-            Real-time updates and forecasts
+            {t('subtitle')}
           </p>
         </header>
 
         <SearchBar onSearch={handleSearch} />
 
+        <SearchHistory onCityClick={handleSearch} />
+        <FavoritesList onCityClick={handleSearch} refreshTrigger={favoritesRefresh} />
+
         {loading && (
           <div className="text-center text-white text-xl">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-white/30 border-t-white"></div>
-            <p className="mt-4 font-medium">Loading weather data...</p>
+            <p className="mt-4 font-medium">{t('loading')}</p>
           </div>
         )}
 
@@ -137,7 +165,7 @@ export default function Home() {
           </div>
         )}
 
-        {weather && !loading && <WeatherCard weather={weather} />}
+        {weather && !loading && <WeatherCard weather={weather} onFavoriteChange={() => setFavoritesRefresh(prev => prev + 1)} />}
 
         {forecast && !loading && <ForecastCard forecast={forecast} />}
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useApp } from '@/contexts/AppContext';
 
 interface SearchBarProps {
   onSearch: (city: string) => void;
@@ -8,11 +9,23 @@ interface SearchBarProps {
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const [city, setCity] = useState('');
+  const { t } = useApp();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (city.trim()) {
       onSearch(city.trim());
+
+      // Save to search history
+      try {
+        await fetch('/api/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: city.trim() }),
+        });
+      } catch (error) {
+        console.error('Failed to save search history:', error);
+      }
     }
   };
 
@@ -38,7 +51,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="Search for a city..."
+          placeholder={t('search')}
           className="w-full pl-12 pr-32 py-4 rounded-2xl backdrop-blur-xl bg-white/20 border border-white/30
                      focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50
                      text-white placeholder-white/60 font-medium text-lg
@@ -52,7 +65,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
                      hover:shadow-xl hover:scale-105 cursor-pointer
                      focus:outline-none focus:ring-2 focus:ring-white/50"
         >
-          Search
+          {t('searchButton')}
         </button>
       </div>
     </form>
