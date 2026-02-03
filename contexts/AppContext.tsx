@@ -5,8 +5,6 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 type Language = 'EN' | 'VI';
 
 interface AppContextType {
-  isDark: boolean;
-  toggleDarkMode: () => void;
   language: Language;
   toggleLanguage: () => void;
   t: (key: string) => string;
@@ -64,31 +62,15 @@ const translations = {
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
   const [language, setLanguage] = useState<Language>('EN');
   const [mounted, setMounted] = useState(false);
 
-  // Load preferences from localStorage
+  // Load language preference from localStorage
   useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     const savedLanguage = (localStorage.getItem('language') as Language) || 'EN';
-
-    setIsDark(savedDarkMode);
     setLanguage(savedLanguage);
-
-    if (savedDarkMode) {
-      document.documentElement.classList.add('dark');
-    }
-
     setMounted(true);
   }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDark;
-    setIsDark(newMode);
-    localStorage.setItem('darkMode', String(newMode));
-    document.documentElement.classList.toggle('dark');
-  };
 
   const toggleLanguage = () => {
     const newLang = language === 'EN' ? 'VI' : 'EN';
@@ -100,13 +82,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return translations[language][key as keyof typeof translations.EN] || key;
   };
 
-  // Prevent flash of wrong theme
+  // Prevent flash of wrong content
   if (!mounted) {
     return null;
   }
 
   return (
-    <AppContext.Provider value={{ isDark, toggleDarkMode, language, toggleLanguage, t }}>
+    <AppContext.Provider value={{ language, toggleLanguage, t }}>
       {children}
     </AppContext.Provider>
   );
